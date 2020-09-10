@@ -9,9 +9,8 @@ type SliceQueue struct {
 }
 
 // NewSliceQueue returns an empty queue.
-// You can give a
 func NewSliceQueue(n int) (q *SliceQueue) {
-	return &SliceQueue{data: make([]interface{}, n)}
+	return &SliceQueue{data: make([]interface{}, 0, n)}
 }
 
 // Enqueue puts the given value v at the tail of the queue.
