@@ -29,9 +29,8 @@ func (q *BoundedQueue) Enqueue(v interface{}) {
 	for q.len == q.capacity {
 		q.cond.Wait()
 	}
-	q.cond.L.Unlock()
-
 	q.q.Enqueue(v)
+	q.cond.L.Unlock()
 
 	// change the condition
 	atomic.AddUint32(&q.len, 1)
@@ -45,9 +44,8 @@ func (q *BoundedQueue) Dequeue() interface{} {
 	for atomic.LoadUint32(&q.len) == 0 {
 		q.cond.Wait()
 	}
-	q.cond.L.Unlock()
-
 	v := q.q.Dequeue()
+	q.cond.L.Unlock()
 
 	// change the condition
 	atomic.AddUint32(&q.len, ^uint32(0))
