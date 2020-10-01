@@ -7,6 +7,7 @@ func TestQueue(t *testing.T) {
 		"lock-free queue":   NewLKQueue(),
 		"two-lock queue":    NewCQueue(),
 		"slice-based queue": NewSliceQueue(0),
+		"bounded queue":     NewBoundedQueue(100),
 	}
 
 	for name, q := range queues {
