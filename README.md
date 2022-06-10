@@ -33,15 +33,13 @@ goos: darwin
 goarch: amd64
 pkg: github.com/smallnest/queue
 
-BenchmarkQueue/lock-free_queue#4-4           	 8399941	       177 ns/op
-BenchmarkQueue/two-lock_queue#4-4            	 7544263	       155 ns/op
-BenchmarkQueue/slice-based_queue#4-4         	 6436875	       194 ns/op
-
-BenchmarkQueue/lock-free_queue#32-4          	 8399769	       140 ns/op
-BenchmarkQueue/two-lock_queue#32-4           	 7486357	       155 ns/op
-BenchmarkQueue/slice-based_queue#32-4        	 4572828	       235 ns/op
-
-BenchmarkQueue/lock-free_queue#1024-4        	 8418556	       140 ns/op
-BenchmarkQueue/two-lock_queue#1024-4         	 7888488	       155 ns/op
-BenchmarkQueue/slice-based_queue#1024-4      	 8902573	       218 ns/op
+BenchmarkQueue/lock-free_queue#4-8         	 4835329	       266.2 ns/op	      16 B/op	       1 allocs/op
+BenchmarkQueue/two-lock_queue#4-8          	 9112242	       168.0 ns/op	      16 B/op	       1 allocs/op
+BenchmarkQueue/slice-based_queue#4-8       	 8778811	       182.0 ns/op	      40 B/op	       0 allocs/op
+BenchmarkQueue/two-lock_queue#32-8         	 9109314	       133.1 ns/op	      16 B/op	       1 allocs/op
+BenchmarkQueue/slice-based_queue#32-8      	 7939176	       171.8 ns/op	      54 B/op	       0 allocs/op
+BenchmarkQueue/lock-free_queue#32-8        	 4735264	       253.8 ns/op	      16 B/op	       1 allocs/op
+BenchmarkQueue/lock-free_queue#1024-8      	 4654297	       242.6 ns/op	      16 B/op	       1 allocs/op
+BenchmarkQueue/two-lock_queue#1024-8       	 7714422	       138.2 ns/op	      16 B/op	       1 allocs/op
+BenchmarkQueue/slice-based_queue#1024-8    	 8609463	       169.7 ns/op	      34 B/op	       0 allocs/op
 ```

@@ -9,10 +9,10 @@ import (
 )
 
 func BenchmarkQueue(b *testing.B) {
-	queues := map[string]Queue{
-		"lock-free queue":   NewLKQueue(),
-		"two-lock queue":    NewCQueue(),
-		"slice-based queue": NewSliceQueue(0),
+	queues := map[string]Queue[int]{
+		"lock-free queue":   NewLKQueue[int](),
+		"two-lock queue":    NewCQueue[int](),
+		"slice-based queue": NewSliceQueue[int](0),
 	}
 
 	length := 1 << 12

@@ -3,18 +3,18 @@ package queue
 import "sync"
 
 // SliceQueue is an unbounded queue which uses a slice as underlying.
-type SliceQueue struct {
-	data []interface{}
+type SliceQueue[T any] struct {
+	data []T
 	mu   sync.Mutex
 }
 
 // NewSliceQueue returns an empty queue.
-func NewSliceQueue(n int) (q *SliceQueue) {
-	return &SliceQueue{data: make([]interface{}, 0, n)}
+func NewSliceQueue[T any](n int) (q *SliceQueue[T]) {
+	return &SliceQueue[T]{data: make([]T, 0, n)}
 }
 
 // Enqueue puts the given value v at the tail of the queue.
-func (q *SliceQueue) Enqueue(v interface{}) {
+func (q *SliceQueue[T]) Enqueue(v T) {
 	q.mu.Lock()
 	q.data = append(q.data, v)
 	q.mu.Unlock()
@@ -22,11 +22,12 @@ func (q *SliceQueue) Enqueue(v interface{}) {
 
 // Dequeue removes and returns the value at the head of the queue.
 // It returns nil if the queue is empty.
-func (q *SliceQueue) Dequeue() interface{} {
+func (q *SliceQueue[T]) Dequeue() T {
+	var t T
 	q.mu.Lock()
 	if len(q.data) == 0 {
 		q.mu.Unlock()
-		return nil
+		return t
 	}
 	v := q.data[0]
 	q.data = q.data[1:]
