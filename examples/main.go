@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	q := queue.NewCQueue()
+	q := queue.NewCQueue[int]()
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go func() {
