@@ -21,7 +21,7 @@ func BenchmarkQueue(b *testing.B) {
 		inputs = append(inputs, rand.Int())
 	}
 
-	for _, cpus := range []int{4, 32, 1024} {
+	for _, cpus := range []int{1024} {
 		runtime.GOMAXPROCS(cpus)
 		for name, q := range queues {
 			b.Run(name+"#"+strconv.Itoa(cpus), func(b *testing.B) {

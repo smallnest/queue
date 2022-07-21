@@ -48,7 +48,7 @@ func (q *LKQueue[T]) Enqueue(v T) {
 }
 
 // Dequeue removes and returns the value at the head of the queue.
-// It returns nil if the queue is empty.
+// It returns the zero value if the queue is empty.
 func (q *LKQueue[T]) Dequeue() T {
 	var t T
 	for {
