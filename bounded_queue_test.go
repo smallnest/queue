@@ -8,7 +8,7 @@ import (
 func TestBoundedQueue(t *testing.T) {
 	count := 100
 
-	q := NewBoundedQueue[int](10)
+	q := NewBoundedQueue[int](10, NewLinkedQueue[int]())
 	var wg sync.WaitGroup
 	wg.Add(2)
 

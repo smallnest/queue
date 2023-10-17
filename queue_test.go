@@ -7,7 +7,7 @@ func TestQueue(t *testing.T) {
 		"lock-free queue":   NewLKQueue[int](),
 		"two-lock queue":    NewCQueue[int](),
 		"slice-based queue": NewSliceQueue[int](0),
-		"bounded queue":     NewBoundedQueue[int](100),
+		"bounded queue":     NewBoundedQueue[int](100, NewLinkedQueue[int]()),
 	}
 
 	for name, q := range queues {
@@ -24,6 +24,9 @@ func TestQueue(t *testing.T) {
 				}
 				if v != i {
 					t.Fatalf("expect %d but got %v", i, v)
+				}
+				if q.Len() != count-i {
+					t.Fatalf("expect len %d, got %d", count-i, q.Len())
 				}
 			}
 		})

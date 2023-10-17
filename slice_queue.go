@@ -8,6 +8,18 @@ type SliceQueue[T any] struct {
 	mu   sync.Mutex
 }
 
+func (q *SliceQueue[T]) Len() int {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	return len(q.data)
+}
+
+func (q *SliceQueue[T]) Reset() {
+	q.mu.Lock()
+	q.data = make([]T, 0, cap(q.data))
+	q.mu.Unlock()
+}
+
 // NewSliceQueue returns an empty queue.
 func NewSliceQueue[T any](n int) (q *SliceQueue[T]) {
 	return &SliceQueue[T]{data: make([]T, 0, n)}

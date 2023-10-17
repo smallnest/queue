@@ -12,8 +12,23 @@ import (
 
 // LKQueue is a lock-free unbounded queue.
 type LKQueue[T any] struct {
-	head unsafe.Pointer
-	tail unsafe.Pointer
+	head   unsafe.Pointer
+	tail   unsafe.Pointer
+	length atomic.Int32
+}
+
+func (q *LKQueue[T]) Len() int {
+	return int(q.length.Load())
+}
+
+func (q *LKQueue[T]) Reset() {
+	n := &node[T]{}
+	for {
+		head, tail := q.head, q.tail
+		if cas[T](&q.head, (*node[T])(head), n) && cas[T](&q.tail, (*node[T])(tail), n) {
+			return
+		}
+	}
 }
 
 type node[T any] struct {
@@ -30,6 +45,7 @@ func NewLKQueue[T any]() *LKQueue[T] {
 // Enqueue puts the given value v at the tail of the queue.
 func (q *LKQueue[T]) Enqueue(v T) {
 	n := &node[T]{value: v}
+	q.length.Add(1)
 	for {
 		tail := load[T](&q.tail)
 		next := load[T](&tail.next)
@@ -60,12 +76,14 @@ func (q *LKQueue[T]) Dequeue() T {
 				if next == nil { // is queue empty?
 					return t
 				}
+				//q.length.CompareAndSwap(0, 1)
 				// tail is falling behind.  try to advance it
 				cas(&q.tail, tail, next)
 			} else {
 				// read value before CAS otherwise another dequeue might free the next node
 				v := next.value
 				if cas(&q.head, head, next) {
+					q.length.Add(-1)
 					return v // Dequeue is done.  return
 				}
 			}

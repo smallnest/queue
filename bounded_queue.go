@@ -2,22 +2,20 @@ package queue
 
 import (
 	"sync"
-	"sync/atomic"
 )
 
 // BoundedQueue is a threadsafe bounded queue.
 type BoundedQueue[T any] struct {
-	capacity uint32
-	len      uint32
-	q        *linkedQueue[T]
+	capacity int
+	q        Queue[T]
 	cond     *sync.Cond
 }
 
 // NewBoundedQueue create a BoundedQueue.
-func NewBoundedQueue[T any](n uint32) *BoundedQueue[T] {
+func NewBoundedQueue[T any](n int, q Queue[T]) *BoundedQueue[T] {
 	return &BoundedQueue[T]{
 		capacity: n,
-		q:        newlinkedQueue[T](),
+		q:        q,
 		cond:     sync.NewCond(&sync.Mutex{}),
 	}
 }
@@ -26,14 +24,13 @@ func NewBoundedQueue[T any](n uint32) *BoundedQueue[T] {
 // If this queue if full, the caller will be blocked.
 func (q *BoundedQueue[T]) Enqueue(v T) {
 	q.cond.L.Lock()
-	for q.len == q.capacity {
+	for q.q.Len() == q.capacity {
 		q.cond.Wait()
 	}
 	q.q.Enqueue(v)
 	q.cond.L.Unlock()
 
 	// change the condition
-	atomic.AddUint32(&q.len, 1)
 	q.cond.Broadcast()
 }
 
@@ -41,14 +38,13 @@ func (q *BoundedQueue[T]) Enqueue(v T) {
 // It will be blocked if the queue is empty.
 func (q *BoundedQueue[T]) Dequeue() T {
 	q.cond.L.Lock()
-	for atomic.LoadUint32(&q.len) == 0 {
+	for q.Len() == 0 {
 		q.cond.Wait()
 	}
 	v := q.q.Dequeue()
 	q.cond.L.Unlock()
 
 	// change the condition
-	atomic.AddUint32(&q.len, ^uint32(0))
 	q.cond.Broadcast()
 
 	return v
@@ -56,6 +52,12 @@ func (q *BoundedQueue[T]) Dequeue() T {
 
 // Len returns length of this queue.
 func (q *BoundedQueue[T]) Len() int {
-	l := atomic.LoadUint32(&q.len)
-	return int(l)
+	return q.q.Len()
+}
+
+func (q *BoundedQueue[T]) Reset() {
+	q.cond.L.Lock()
+	q.q.Reset()
+	q.cond.L.Unlock()
+	q.cond.Broadcast()
 }
